@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 
 class MainScreen extends StatefulWidget {
+  static const String idScreen = "main";   //페이지 id
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -10,6 +12,7 @@ class MainScreen extends StatefulWidget {
 
 
 class _MainScreenState extends State<MainScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
