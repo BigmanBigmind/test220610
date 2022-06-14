@@ -1,8 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rider_app/AllScreens/registrationScreen.dart';
+import 'package:rider_app/AllScreens/mainscreen.dart';
+import 'package:rider_app/main.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String idScreen = "login";   //페이지 id
+
+  TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController passwordTextEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +43,7 @@ class LoginScreen extends StatelessWidget {
 
                     SizedBox(height: 1.0,),
                     TextField(
+                      controller: emailTextEditingController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: "E-mail",
@@ -51,6 +60,7 @@ class LoginScreen extends StatelessWidget {
 
                     SizedBox(height: 1.0,),
                     TextField(
+                      controller: passwordTextEditingController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: "password",
@@ -68,7 +78,17 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(height: 10.0,),
                     ElevatedButton(
                       onPressed: (){
-                        print("loggedin button clicked");
+                        print("log in button clicked");
+                        if(!emailTextEditingController.text.contains("@")){
+                          displayToastMsg("Email address is not correct", context);
+                        }
+                        else if(passwordTextEditingController.text.isEmpty){
+                          displayToastMsg("Password is mandatory.", context);
+                        }
+                        else{
+                          loginAndAuthenticateUser(context);
+                        }
+
                       },
                       child: Container(
                         height: 50.0,
@@ -110,5 +130,39 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+  //FirebaseAuth instance 선언을 꼭 해줘야 됨
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  void loginAndAuthenticateUser(BuildContext context) async{
+
+    final User firebaseUser = (await _firebaseAuth
+        .signInWithEmailAndPassword(
+        email: emailTextEditingController.text,
+        password: passwordTextEditingController.text
+    ).catchError((errMsg){
+      displayToastMsg("Error: " + errMsg.toString(), context);
+    })).user;   //sign in user information adapting firebase format
+
+    if(firebaseUser != null)  //user created
+    {
+      //displayToastMsg("firebaseUser != null", context);
+      //user가 db에 있는지 확인    //todo: DataSnapshot이란? snap.snapshot.value 어떻게 타고 들어갔을까
+      usersRef.child(firebaseUser.uid).once().then((snap){
+        if(snap.snapshot.value != null){
+          Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
+          displayToastMsg("Logged in successfully", context);
+        }
+        else{
+          _firebaseAuth.signOut();
+          displayToastMsg("No record exists for this user. Please create new account", context);
+        }
+      });
+    }
+    else
+    {
+      //error occured - display error log
+      displayToastMsg("Error occured. cannot sign in", context);
+    }
+
   }
 }
