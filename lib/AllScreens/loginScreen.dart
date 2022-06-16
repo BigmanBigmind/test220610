@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:rider_app/AllScreens/registrationScreen.dart';
 import 'package:rider_app/AllScreens/mainscreen.dart';
 import 'package:rider_app/main.dart';
+import 'package:rider_app/AllWidgets/progressDialog.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String idScreen = "login";   //페이지 id
@@ -134,12 +135,21 @@ class LoginScreen extends StatelessWidget {
   //FirebaseAuth instance 선언을 꼭 해줘야 됨
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   void loginAndAuthenticateUser(BuildContext context) async{
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context){
+        return ProgressDialog(message: "Authenticating. Please wait...",);
+      }
+    );
 
     final User firebaseUser = (await _firebaseAuth
         .signInWithEmailAndPassword(
         email: emailTextEditingController.text,
         password: passwordTextEditingController.text
     ).catchError((errMsg){
+      Navigator.pop(context);   //remove showDialog
       displayToastMsg("Error: " + errMsg.toString(), context);
     })).user;   //sign in user information adapting firebase format
 
@@ -153,6 +163,7 @@ class LoginScreen extends StatelessWidget {
           displayToastMsg("Logged in successfully", context);
         }
         else{
+          Navigator.pop(context); //remove showDialog
           _firebaseAuth.signOut();
           displayToastMsg("No record exists for this user. Please create new account", context);
         }
@@ -160,6 +171,7 @@ class LoginScreen extends StatelessWidget {
     }
     else
     {
+      Navigator.pop(context); //remove showDialog
       //error occured - display error log
       displayToastMsg("Error occured. cannot sign in", context);
     }

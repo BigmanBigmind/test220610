@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rider_app/AllScreens/loginScreen.dart';
 import 'package:rider_app/AllScreens/mainscreen.dart';
 import 'package:rider_app/main.dart';
+import 'package:rider_app/AllWidgets/progressDialog.dart';
 
 class RegistrationScreen extends StatelessWidget {
   static const String idScreen = "register";    //페이지 id
@@ -178,11 +179,21 @@ class RegistrationScreen extends StatelessWidget {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   void registerNewUser(BuildContext context) async
   {
+
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context){
+          return ProgressDialog(message: "Registering. Please wait...",);
+        }
+    );
+
     final User firebaseUser = (await _firebaseAuth
         .createUserWithEmailAndPassword(
           email: emailTextEditingController.text,
           password: passwordTextEditingController.text
         ).catchError((errMsg){
+          Navigator.pop(context); //remove showDialog
           displayToastMsg("Error: " + errMsg.toString(), context);
     })).user;   //create user information adapting firebase format
     if(firebaseUser != null)  //user created
@@ -202,6 +213,7 @@ class RegistrationScreen extends StatelessWidget {
     }
     else
     {
+      Navigator.pop(context); //remove showDialog
       //error msg
       displayToastMsg("New user account has not created", context);
     }
