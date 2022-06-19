@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
  //     home: RegistrationScreen(),
-      initialRoute: LoginScreen.idScreen,   // 페이지 id 로 지정
+      initialRoute: MainScreen.idScreen,   // 페이지 id 로 지정
       routes:{
         RegistrationScreen.idScreen: (context) => RegistrationScreen(),
         LoginScreen.idScreen: (context) => LoginScreen(),
