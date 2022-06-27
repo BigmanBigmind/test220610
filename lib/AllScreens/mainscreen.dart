@@ -20,6 +20,8 @@ class _MainScreenState extends State<MainScreen> {
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController newGoogleMapController;
 
+  GlobalKey<ScaffoldState> scaffoldkey = new GlobalKey<ScaffoldState>();
+
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.56667,  126.97806),
     zoom: 14.4746,
@@ -28,8 +30,56 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldkey,
       appBar: AppBar(
         title: Text("Main Screen"),
+      ),
+      drawer: Container(
+        color: Colors.white,
+        width: 255.0,
+        child: Drawer(
+          child: ListView(
+            children: [
+              Container(
+                height: 165.0,
+                child: DrawerHeader(
+                  decoration: BoxDecoration(color: Colors.white),
+                  child: Row(
+                    children: [
+                      Image.asset("images/user_icon.png", height: 65.0, width: 65.0,),
+                      SizedBox(width: 16.0,),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Profile name", style: TextStyle(fontSize: 16.0, fontFamily: "Brand-Bold"),),
+                          SizedBox(height: 6.0,),
+                          Text("Visit Profile"),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              DividerWidget(),
+
+              SizedBox(height: 12.0,),
+
+              ListTile(
+                leading: Icon(Icons.history),
+                title: Text("Histrory", style: TextStyle(fontSize: 15.0),),
+              ),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text("Visit Profile", style: TextStyle(fontSize: 15.0),),
+              ),
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text("About", style: TextStyle(fontSize: 15.0),),
+              ),
+
+            ],
+          )
+        )
       ),
       body: Stack(
         children: [
@@ -42,6 +92,42 @@ class _MainScreenState extends State<MainScreen> {
             mapType: MapType.normal,
             myLocationButtonEnabled: true,
           ),
+
+          //hamburger button for Drawer
+          Positioned(
+            top: 45.0,
+            left: 22.0,
+
+            child: GestureDetector(
+              onTap: (){
+                scaffoldkey.currentState.openDrawer();
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 6.0,
+                      spreadRadius: 0.5,
+                      offset: Offset(
+                        0.7,
+                        0.7,
+                      ),
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.menu, color: Colors.black),
+                  radius: 20.0,
+                ),
+              ),
+            ),
+          ),
+
+          //밑에 박스   //todo: Positioned의 left, right, bottom 위치 선정이 궁금
           Positioned(
             left: 0.0,
             right: 0.0,
@@ -107,6 +193,7 @@ class _MainScreenState extends State<MainScreen> {
                                 style: TextStyle(color: Colors.black54, fontSize: 12.0,),),
                           ],
                         ),
+
                       ],
                     ),
                     SizedBox(height: 10.0,),
