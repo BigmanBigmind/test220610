@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.muhammadali.rider_app">
-   <application
+
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 이건 https://pub.dev/packages/geolocator 에 없고 강의에서 하라고 한것 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
         android:label="rider_app"
         android:icon="@mipmap/ic_launcher">
         <activity

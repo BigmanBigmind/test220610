@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
 
 
@@ -21,6 +22,20 @@ class _MainScreenState extends State<MainScreen> {
   GoogleMapController newGoogleMapController;
 
   GlobalKey<ScaffoldState> scaffoldkey = new GlobalKey<ScaffoldState>();
+
+  //todo: clima app 의 geoloactor 사용한거 보기
+  Position currentPosition;
+  var geolocator = Geolocator();
+
+  void locatePosition() async{
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    currentPosition = position;
+
+    LatLng latlngPostion = LatLng(position.latitude, position.longitude);
+
+    CameraPosition cameraPosition = new CameraPosition(target: latlngPostion, zoom: 14);
+    newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
 
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.56667,  126.97806),
@@ -88,6 +103,8 @@ class _MainScreenState extends State<MainScreen> {
             onMapCreated: (GoogleMapController controller) {
               _controllerGoogleMap.complete(controller);
               newGoogleMapController = controller;      //guide에 없음. 새로 넣음
+
+              locatePosition();
             },
             mapType: MapType.normal,
             myLocationButtonEnabled: true,
