@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rider_app/AllWidgets/Divider.dart';
+import 'package:rider_app/Assistants/assistantMethods.dart';
 
 
 
@@ -26,18 +27,42 @@ class _MainScreenState extends State<MainScreen> {
   //todo: clima app 의 geoloactor 사용한거 보기
   Position currentPosition;
   var geolocator = Geolocator();
+  double bottomPaddingOfMap = 0;
 
   void locatePosition() async{
+    await Geolocator.requestPermission();
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     currentPosition = position;
+    print("****currentPosition.longitude: ");
+    print(currentPosition.longitude);
+    print(" currentPosition.longitude: ");
+    print(currentPosition.longitude);
+    print("\n");
 
     LatLng latlngPostion = LatLng(position.latitude, position.longitude);
+    print("****latlngPostion.longitude: ");
+    print(latlngPostion.longitude);
+    print(" latlngPostion.latitude: ");
+    print(latlngPostion.latitude);
+    print("\n");
 
     CameraPosition cameraPosition = new CameraPosition(target: latlngPostion, zoom: 14);
     newGoogleMapController.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+//    AssistantMethods assistantMethods;
+    try{
+      //todo: class 내의 함수 그대로 불러쓰려면 static 선언 필요
+      String address = await AssistantMethods.searchCoordinateAddress(position);
+      print("************This is your Address :: " + address);
+
+    }
+    catch(exp){
+      print("***********excpetion :: ");
+    }
+
   }
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
+  static final CameraPosition _kGooglePlex = CameraPosition(  //initialCameraPosition 으로 할 위치
     target: LatLng(37.56667,  126.97806),
     zoom: 14.4746,
   );
@@ -99,15 +124,23 @@ class _MainScreenState extends State<MainScreen> {
       body: Stack(
         children: [
           GoogleMap(
+            padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
             initialCameraPosition: _kGooglePlex,
             onMapCreated: (GoogleMapController controller) {
               _controllerGoogleMap.complete(controller);
               newGoogleMapController = controller;      //guide에 없음. 새로 넣음
 
+              setState(() {
+                bottomPaddingOfMap = 300.0;
+              });
+
               locatePosition();
             },
             mapType: MapType.normal,
             myLocationButtonEnabled: true,
+            myLocationEnabled: true,
+            zoomGesturesEnabled: true,
+            zoomControlsEnabled: true,
           ),
 
           //hamburger button for Drawer
@@ -150,7 +183,7 @@ class _MainScreenState extends State<MainScreen> {
             right: 0.0,
             bottom: 0.0,
             child: Container(
-              height: 320.0,
+              height: 300.0,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)),
