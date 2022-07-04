@@ -14,6 +14,7 @@ class AssistantMethods
   static Future<String> searchCoordinateAddress(Position position, context) async
   {
     String placeAddress = "";
+    String st1, st2, st3, st4;
     String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapkey";
     print("*******before RequestAssistant.getRequest");
     var response = await RequestAssistant.getRequest(url);
@@ -22,7 +23,12 @@ class AssistantMethods
       // print("*****response:");
       // print(response);
       // placeAddress = response["results"][0]["formatted_address"];
-      placeAddress = response["results"][0]["address_components"][0];
+      st1 = response["results"][0]["address_components"][0]["long_name"];
+      st2 = response["results"][0]["address_components"][1]["long_name"];
+      st3 = response["results"][0]["address_components"][2]["long_name"];
+      st4 = response["results"][0]["address_components"][3]["long_name"];
+      placeAddress = st1 + ", " + st2 + ", " + st3 + ", " + st4;
+      print("*****placeAddress: " + placeAddress);
 
       Address userPickUpAddress = new Address();
       userPickUpAddress.longitude = position.longitude;
