@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rider_app/DataHandler/appData.dart';
+import 'package:rider_app/configMaps.dart';
+
+import '../Assistants/requestAssistant.dart';
 
 class SearchScreen extends StatefulWidget {
 
@@ -124,4 +127,14 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
+
+  void findPlace(String placeName) async
+  {
+    if(placeName.length > 1){
+      String autoCompleteUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&key=$mapkey&sessiontoken=1234567890";
+
+      var res = await RequestAssistant.getRequest(autoCompleteUrl);
+    }
+  }
+
 }
